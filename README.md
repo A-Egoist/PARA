@@ -24,18 +24,18 @@ This is the PyTorch implementation of our paper:
 | MovieLens-1M  | 6 040   | 3 900   | 1 000 209    | [URL](https://grouplens.org/datasets/movielens/1m/)          |
 | MovieLens-10M | 69 878  | 10 677  | 10 000 054   | [URL](https://grouplens.org/datasets/movielens/10m/)         |
 
-
+https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud
 
 | Method   | MF-based | LightGCN-based | ItemCF-based |
 | -------- | -------- | -------------- | ------------ |
-| MF       | URL      |                |              |
-| LightGCN |          | URL            |              |
-| ItemCF   |          |                | URL          |
-| IPS      | URL      |                |              |
-| DICE     | URL      |                |              |
-| PDA      | URL      | URL            |              |
-| TIDE     | URL      | URL            |              |
-| PARA     | URL      | URL            | URL          |
+| MF       | ✅        | ✅              |              |
+| LightGCN |          | ✅              | ✅            |
+| ItemCF   |          |                | ✅            |
+| IPS      | ✅        |                |              |
+| DICE     | ✅        |                |              |
+| PDA      | ✅        | ✅              |              |
+| TIDE     | ✅        | ✅              |              |
+| PARA     | ✅        | ✅              | ✅            |
 
 
 
@@ -48,9 +48,7 @@ Take the Ciao dataset as an example:
      git clone https://github.com/A-Egoist/TWDP.git --depth=1
      ```
 
-2.   Download preprocessed data at [Baidu Netdisk]()
-
-3.   Download pre-trained models at [Baidu Netdisk]()
+2.   Download preprocessed data and pre-trained model at [Baidu Netdisk](https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud)
 
 4.   Inference
 
