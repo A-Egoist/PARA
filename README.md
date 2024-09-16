@@ -50,6 +50,68 @@ Take the Ciao dataset as an example:
 
 2.   Download preprocessed data and pre-trained model at [Baidu Netdisk](https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud)
 
+     -   Each original dataset was re-divided into 5 sets of files according to the requirements of five-fold cross-validation. Each set consists of `*.train`, `*.test`, and `*.extend` files. The `*.train` file is used for training, the `*.test` file for testing, and the `*.extend` file contains data in the format of `(user, positiveItem, negativeItem)`, created by performing negative sampling on the `*.train` file four times. Additionally, the `*.pkl` file stores the processed results of the `*.train` file.
+     -   The pre-trained model is named in the format `backbone-method-dataset-fold_index`. For example, if the PARA method uses MF as the backbone model, the models trained on the Ciao dataset would be named `MF-PARA-Ciao-1`, `MF-PARA-Ciao-2`, `MF-PARA-Ciao-3`, `MF-PARA-Ciao-4`, and `MF-PARA-Ciao-5`. The numbering from 1 to 5 indicates the models saved for a five-fold cross-validation experiment.
+     -   To reproduce the results of PARA with MF as the backbone model on the Ciao dataset, you need to download the Ciao dataset and ensure it contains the following files: `movie-ratings1.test`, `movie-ratings1.pkl`, `movie-ratings2.test`, `movie-ratings2.pkl`, `movie-ratings3.test`, `movie-ratings3.pkl`, `movie-ratings4.test`, `movie-ratings4.pkl`, and `movie-ratings5.test`, `movie-ratings5.pkl`. Additionally, you need to download the pre-trained models `MF-PARA-ciao-1.pt`, `MF-PARA-ciao-2.pt`, `MF-PARA-ciao-3.pt`, `MF-PARA-ciao-4.pt`, and `MF-PARA-ciao-5.pt`.
+
+3.   Confirm the structure of the file tree
+     <details>
+     <summary>点击展开/收起文件树</summary>
+     ```plaintext
+     PARA
+     │  .gitignore
+     │  config.yaml
+     │  main.py
+     │  README.md
+     │      
+     ├─data
+     │  │  README.md
+     │  │          
+     │  ├─Ciao
+     │  │      movie-ratings1.pkl
+     │  │      movie-ratings1.test
+     │  │      movie-ratings2.pkl
+     │  │      movie-ratings2.test
+     │  │      movie-ratings3.pkl
+     │  │      movie-ratings3.test
+     │  │      movie-ratings4.pkl
+     │  │      movie-ratings4.test
+     │  │      movie-ratings5.pkl
+     │  │      movie-ratings5.test
+     │
+     ├─img
+     │      PARA-workflow.svg
+     │      
+     ├─logs
+     │      log_to_excel.py
+     │      
+     ├─output
+     ├─save_model
+     │      MF-PARA-ciao-1.pt
+     │      MF-PARA-ciao-2.pt
+     │      MF-PARA-ciao-3.pt
+     │      MF-PARA-ciao-4.pt
+     │      MF-PARA-ciao-5.pt
+     │      
+     └─src
+         │  data_processing.py
+         │  metrics.py
+         │  utils.py
+         │  __init__.py
+         │  
+         ├─models
+         │  │  base.py
+         │  │  DICE.py
+         │  │  IPS.py
+         │  │  PARA.py
+         │  │  PDA.py
+         │  │  TIDE.py
+         │  │  __init__.py
+     ```
+     </details>
+     
+     
+     
 4.   Inference
 
      ```bash
@@ -60,10 +122,12 @@ Take the Ciao dataset as an example:
      ```bash
      python ./logs/log_to_excel.py --input ./logs/eval.py --output ./output/eval.xlsx --sl 1 --el 2000
      ```
-     
+
      
 
 ## Start from Scratch
+
+TODO
 
 Take the Ciao dataset as an example:
 

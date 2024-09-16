@@ -77,22 +77,6 @@ def evaluate_output(backbone, dataset, method, top_k, result):
     result = {metric: np.array(values) for metric, values in result.items()}
     result_mean = {metric: np.round(np.mean(values), 4) for metric, values in result.items()}
     result_std = {metric: np.round(np.std(values), 4) for metric, values in result.items()}
-    # print(f"{method}'s performance (backbone: {backbone}, device: {device}, dataset: {dataset}, top-k: {top_k}): \n"
-    #       f"Recall={result_mean['Recall']} ± {result_std['Recall']}, \n"
-    #       f"Precision={result_mean['Precision']} ± {result_std['Precision']}, \n"
-    #       f"F1_score={result_mean['F1_score']} ± {result_std['F1_score']}, \n"
-    #       f"HR={result_mean['HR']} ± {result_std['HR']}, \n"
-    #       f"MRR={result_mean['MRR']} ± {result_std['MRR']}, \n"
-    #       f"MAP={result_mean['MAP']} ± {result_std['MAP']}, \n"
-    #       f"NDCG={result_mean['NDCG']} ± {result_std['NDCG']}, \n"
-    #       f"Novelty={result_mean['Novelty']} ± {result_std['Novelty']}, \n"
-    #       f"Gini={result_mean['Gini']} ± {result_std['Gini']}, \n"
-    #       f"ARP_t={result_mean['ARP_t']} ± {result_std['ARP_t']}, \n"
-    #       f"ARP_r={result_mean['ARP_r']} ± {result_std['ARP_r']}, \n"
-    #       f"ARQ_t={result_mean['ARQ_t']} ± {result_std['ARQ_t']}, \n"
-    #       f"ARQ_r={result_mean['ARQ_r']} ± {result_std['ARQ_r']}, \n"
-    #       f"NG_score={result_mean['NG_score']} ± {result_std['NG_score']}, \n"
-    #       f"Overall_score={result_mean['Overall_score']} ± {result_std['Overall_score']}.")
     logger.info(f"{backbone}-{method}'s performance ({dataset}@{top_k}): "
           f"Recall={result_mean['Recall']} ± {result_std['Recall']}, "
           f"Precision={result_mean['Precision']} ± {result_std['Precision']}, "
@@ -180,8 +164,6 @@ def get_config(backbone, dataset, method):
     train_batch_size = parameters['batch_size']
     test_batch_size = parameters['test_batch_size']
     embedding_dim = parameters['embedding_dim']
-    # num_epoch = parameters['BPRMF_num_epoch'] 
-    # lr = parameters['BPRMF_lr']
     num_workers = parameters['num_workers']
     # dataset config
     n_layers = parameters[f'n_layers-{dataset}']
@@ -207,7 +189,6 @@ def get_config(backbone, dataset, method):
         method_config = {'gamma': parameters[f'PD_gamma-{dataset}']}
     elif method == 'TIDE': 
         num_epoch = parameters[f'{backbone}-{method}-num_epoch']
-        # lr = parameters['TIDE_lr']
         lr = parameters[f'{backbone}-TIDE-{dataset}-lr']
         method_config = {'q': parameters[f'TIDE_q-{dataset}'],
                          'b': parameters[f'TIDE_b-{dataset}'],
