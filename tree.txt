@@ -1,0 +1,49 @@
+PARA
+│  .gitignore
+│  config.yaml
+│  main.py
+│  README.md
+│      
+├─data
+│  │  README.md
+│  │          
+│  ├─Ciao
+│  │      movie-ratings1.pkl
+│  │      movie-ratings1.test
+│  │      movie-ratings2.pkl
+│  │      movie-ratings2.test
+│  │      movie-ratings3.pkl
+│  │      movie-ratings3.test
+│  │      movie-ratings4.pkl
+│  │      movie-ratings4.test
+│  │      movie-ratings5.pkl
+│  │      movie-ratings5.test
+│
+├─img
+│      PARA-workflow.svg
+│      
+├─logs
+│      log_to_excel.py
+│      
+├─output
+├─save_model
+│      MF-PARA-ciao-1.pt
+│      MF-PARA-ciao-2.pt
+│      MF-PARA-ciao-3.pt
+│      MF-PARA-ciao-4.pt
+│      MF-PARA-ciao-5.pt
+│      
+└─src
+    │  data_processing.py
+    │  metrics.py
+    │  utils.py
+    │  __init__.py
+    │  
+    ├─models
+    │  │  base.py
+    │  │  DICE.py
+    │  │  IPS.py
+    │  │  PARA.py
+    │  │  PDA.py
+    │  │  TIDE.py
+    │  │  __init__.py
