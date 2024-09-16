@@ -1,28 +1,13 @@
 # .DS_Store
 .DS_Store
-*/.DS_Store
 
 # .vscode
 .vscode
 
 # Code
-Code/data
-Code/save_model/*.pt
-Code/save_model/014/*.pt
-Code/save_model/015-Table1/*.pt
-Code/save_model/5-fold 1st/*.pt
-Code/save_model/5-fold 2nd/*.pt
-Code/save_model/5-fold 3rd/*.pt
-Code/save_model/5-fold 4th/*.pt
-Code/save_model/5-fold 5th/*.pt
-Code/utlis/*.exe
-**/__pycache__
-
-# Others
-Reference
-Docs
-
-
+data/*
+save_model/*.pt
+utlis/*.exe
 
 # Generate by GitHub
 # Byte-compiled / optimized / DLL files

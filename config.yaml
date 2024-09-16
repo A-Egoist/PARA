@@ -1,0 +1,179 @@
+# global setting
+# batch_size: 65536
+batch_size: 32768
+# batch_size: 16384
+# test_batch_size: 4096
+test_batch_size: 2048
+embedding_dim: 128
+num_workers: 0
+
+
+# dataset setting
+n_layers-amazon-music: 2
+n_layers-ciao: 1
+n_layers-douban-book: 2
+n_layers-douban-movie: 3
+n_layers-ml-1m: 2
+n_layers-ml-10m: 3
+n_layers-ml-100k: 2
+n_layers-netflix: 3
+n_layers-yelp: 3
+
+lamb-amazon-music: 0.1
+lamb-ciao: 1
+lamb-douban-book: 0.1
+lamb-douban-movie: 0.01
+lamb-ml-1m: 0.01
+lamb-ml-10m: 0.01
+lamb-ml-100k: 1
+lamb-netflix: 0.001
+lamb-yelp: 0.1
+
+
+# model setting
+MF_num_epoch: 20
+MF_lr: 0.1
+
+MF-base-num_epoch: 100
+LightGCN-base-num_epoch: 100
+MF-IPS-num_epoch: 100
+LightGCN-IPS-num_epoch: 100
+MF-DICE-num_epoch: 100
+LightGCN-DICE-num_epoch: 100
+MF-PDA-num_epoch: 100
+LightGCN-PDA-num_epoch: 100
+MF-TIDE-num_epoch: 100
+LightGCN-TIDE-num_epoch: 100
+MF-PARA-num_epoch: 100
+LightGCN-PARA-num_epoch: 100
+
+BPRMF_num_epoch: 40
+# BPRMF_lr: 0.05  # MF
+# BPRMF_lr: 1  # LightGCN
+MF-base-amazon-music-lr: 0.1
+MF-base-ciao-lr: 0.1
+MF-base-douban-book-lr: 0.1
+MF-base-douban-movie-lr: 0.1
+MF-base-ml-1m-lr: 0.1
+MF-base-ml-10m-lr: 0.1
+LightGCN-base-amazon-music-lr: 0.1
+LightGCN-base-ciao-lr: 1
+LightGCN-base-douban-book-lr: 0.1
+LightGCN-base-douban-movie-lr: 0.1
+LightGCN-base-ml-1m-lr: 0.1
+LightGCN-base-ml-10m-lr: 0.1
+
+IPS_num_epoch: 20
+# IPS_lr: 0.1
+MF-IPS-lr: 0.1
+LightGCN-IPS-lr: 0.1
+IPS_lambda: 30
+
+DICE_num_epoch: 20
+DICE_lr: 0.01
+DICE_alpha: 30
+DICE_beta: 0.01
+
+PD_num_epoch: 20
+PD_lr: 0.1
+PD_gamma-ml-100k: 0.2
+PD_gamma-ml-1m: 0.02
+PD_gamma-ml-10m: 0.02
+PD_gamma-douban-movie: 0.02
+PD_gamma-amazon-music: 0.02
+PD_gamma-ciao: 0.06
+PD_gamma-netflix: 0.02
+PD_gamma-douban-book: 0.02
+PD_gamma-yelp: 0.02
+
+# TIDE
+TIDE_num_epoch: 20
+MF-TIDE-amazon-music-lr: 0.1
+MF-TIDE-ciao-lr: 0.1
+MF-TIDE-douban-book-lr: 0.1
+MF-TIDE-douban-movie-lr: 0.1
+MF-TIDE-ml-1m-lr: 0.1
+MF-TIDE-ml-10m-lr: 0.1
+LightGCN-TIDE-amazon-music-lr: 0.1
+LightGCN-TIDE-ciao-lr: 0.5
+LightGCN-TIDE-douban-book-lr: 0.1
+LightGCN-TIDE-douban-movie-lr: 0.1
+LightGCN-TIDE-ml-1m-lr: 0.1
+LightGCN-TIDE-ml-10m-lr: 0.1
+TIDE_q-ml-100k: -1
+TIDE_lr_q-ml-100k: 0.1
+TIDE_b-ml-100k: -1
+TIDE_lr_b-ml-100k: 0.001
+TIDE_q-ml-1m: -1
+TIDE_lr_q-ml-1m: 0.001
+TIDE_b-ml-1m: -2
+TIDE_lr_b-ml-1m: 0.0001
+TIDE_q-ml-10m: -1
+TIDE_lr_q-ml-10m: 0.001
+TIDE_b-ml-10m: -2
+TIDE_lr_b-ml-10m: 0.0001
+TIDE_q-douban-movie: -1
+TIDE_lr_q-douban-movie: 0.1
+TIDE_b-douban-movie: -5
+TIDE_lr_b-douban-movie: 0.0001
+TIDE_q-amazon-music: -1
+TIDE_lr_q-amazon-music: 0.001
+TIDE_b-amazon-music: -2
+TIDE_lr_b-amazon-music: 0.0001
+TIDE_q-ciao: -1
+# TIDE_lr_q-ciao: 0.1
+TIDE_lr_q-ciao: 1
+TIDE_b-ciao: -1
+# TIDE_lr_b-ciao: 0.001
+TIDE_lr_b-ciao: 0.1
+TIDE_q-netflix: -1
+TIDE_lr_q-netflix: 0.001
+TIDE_b-netflix: -2
+TIDE_lr_b-netflix: 0.0001
+TIDE_q-douban-book: -1
+TIDE_lr_q-douban-book: 0.001
+TIDE_b-douban-book: -2
+TIDE_lr_b-douban-book: 0.0001
+TIDE_q-yelp: -1
+TIDE_lr_q-yelp: 0.001
+TIDE_b-yelp: -2
+TIDE_lr_b-yelp: 0.0001
+
+# PARA
+PARA_num_epoch: 20
+
+# {backbone}-PARA-{dataset}-lr
+MF-PARA-amazon-music-lr: 0.1
+MF-PARA-ciao-lr: 0.1
+MF-PARA-douban-book-lr: 0.1
+MF-PARA-douban-movie-lr: 0.1
+MF-PARA-ml-1m-lr: 0.1
+MF-PARA-ml-10m-lr: 0.1
+LightGCN-PARA-amazon-music-lr: 0.1
+LightGCN-PARA-ciao-lr: 1
+LightGCN-PARA-douban-book-lr: 0.1
+LightGCN-PARA-douban-movie-lr: 0.1
+LightGCN-PARA-ml-1m-lr: 0.1
+LightGCN-PARA-ml-10m-lr: 0.1
+
+PARA_alpha-amazon-music: 0.6
+PARA_beta-amazon-music: 0.8
+PARA_alpha-ciao: 0.5
+PARA_beta-ciao: 0.9
+PARA_alpha-douban-book: 0.8
+PARA_beta-douban-book: 0.97
+PARA_alpha-douban-movie: 0.8
+PARA_beta-douban-movie: 0.9
+PARA_alpha-ml-1m: 0.01
+PARA_beta-ml-1m: 0.99
+PARA_alpha-ml-10m: 0.99
+# PARA_beta-ml-10m: 0.8
+PARA_beta-ml-10m: 0.82
+PARA_alpha-ml-100k: 0.9
+PARA_beta-ml-100k: 0.9
+# PARA_alpha-netflix: 0.9
+# PARA_beta-netflix: 0.75
+PARA_alpha-netflix: 0.1
+PARA_beta-netflix: 0.6
+PARA_alpha-yelp: 0.05
+PARA_beta-yelp: 0.8

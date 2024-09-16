@@ -48,19 +48,21 @@ Take the Ciao dataset as an example:
      git clone https://github.com/A-Egoist/TWDP.git --depth=1
      ```
 
-2.   Download preprocessed data
+2.   Download preprocessed data at [Baidu Netdisk]()
 
-3.   Download pre-trained models
+3.   Download pre-trained models at [Baidu Netdisk]()
 
 4.   Inference
 
      ```bash
+     python ./main.py --backbone MF --method PARA --dataset ciao --mode eval
      ```
 
 5.   Convert to Excel
      ```bash
+     python ./logs/log_to_excel.py --input ./logs/eval.py --output ./output/eval.xlsx --sl 1 --el 2000
      ```
-
+     
      
 
 ## Start from Scratch
