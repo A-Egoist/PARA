@@ -99,8 +99,9 @@ Take the Ciao dataset as an example:
 
      *   `--backbone`: The backbone model. Available options: `['MF', 'LightGCN']`.
      *   `--method`: The method to be used. Available options: `['Base', 'IPS', 'DICE', 'PDA', 'TIDE', 'PARA']`.
-     *   `dataset`: The dataset to use. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
-
+     *   `--dataset`: The dataset to use. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
+     *   `--mode`: The mode to be choosen. Available options: `['train', 'eval', 'both']`.
+     
 5.   Convert the results to Excel
      After evaluation, convert the log results into an Excel file using the following command:
      
