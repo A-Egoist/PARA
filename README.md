@@ -4,7 +4,7 @@ This is the PyTorch implementation of our paper:
 
 >   Plug-and-play Rating Prediction Adjustment through Trisecting-acting-outcome
 
-![The Workflow of PARA](img/PARA-workflow.svg)
+![The Workflow of PARA](img/PARA-workflow.svg#pic_center)
 
 ## Requirements
 
