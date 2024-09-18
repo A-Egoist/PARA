@@ -15,6 +15,8 @@ This is the PyTorch implementation of our paper:
 
 ## Datasets and Pre-trained Models
 
+Dataset information
+
 | Dataset       | Users   | Items   | Interactions | Link                                                         |
 | ------------- | ------- | ------- | ------------ | ------------------------------------------------------------ |
 | Amazon-Music  | 478 235 | 266 414 | 836 006      | [URL](http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/ratings_Digital_Music.csv) |
@@ -24,12 +26,12 @@ This is the PyTorch implementation of our paper:
 | MovieLens-1M  | 6 040   | 3 900   | 1 000 209    | [URL](https://grouplens.org/datasets/movielens/1m/)          |
 | MovieLens-10M | 69 878  | 10 677  | 10 000 054   | [URL](https://grouplens.org/datasets/movielens/10m/)         |
 
-https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud
+Pre-trained model information
 
 | Method   | MF-based | LightGCN-based | ItemCF-based |
 | -------- | -------- | -------------- | ------------ |
-| MF       | ✅        | ✅              |              |
-| LightGCN |          | ✅              | ✅            |
+| MF       | ✅        |                |              |
+| LightGCN |          | ✅              |              |
 | ItemCF   |          |                | ✅            |
 | IPS      | ✅        |                |              |
 | DICE     | ✅        |                |              |
@@ -43,31 +45,78 @@ https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud
 
 Take the Ciao dataset as an example:
 
-1.   Clone source code
+1.   Clone the source code
      ```bash
      git clone https://github.com/A-Egoist/TWDP.git --depth=1
      ```
 
-2.   Download preprocessed data and pre-trained model at [Baidu Netdisk](https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud)
+2.   Download preprocessed data and pre-trained models
+     Download the data and models from [Baidu Netdisk](https://pan.baidu.com/s/1ZxzcKKBCefl39vp7YKMUng?pwd=8yud).
 
-     -   Each original dataset was re-divided into 5 sets of files according to the requirements of five-fold cross-validation. Each set consists of `*.train`, `*.test`, and `*.extend` files. The `*.train` file is used for training, the `*.test` file for testing, and the `*.extend` file contains data in the format of `(user, positiveItem, negativeItem)`, created by performing negative sampling on the `*.train` file four times. Additionally, the `*.pkl` file stores the processed results of the `*.train` file.
-     -   The pre-trained model is named in the format `backbone-method-dataset-fold_index`. For example, if the PARA method uses MF as the backbone model, the models trained on the Ciao dataset would be named `MF-PARA-Ciao-1`, `MF-PARA-Ciao-2`, `MF-PARA-Ciao-3`, `MF-PARA-Ciao-4`, and `MF-PARA-Ciao-5`. The numbering from 1 to 5 indicates the models saved for a five-fold cross-validation experiment.
-     -   To reproduce the results of PARA with MF as the backbone model on the Ciao dataset, you need to download the Ciao dataset and ensure it contains the following files: `movie-ratings1.test`, `movie-ratings1.pkl`, `movie-ratings2.test`, `movie-ratings2.pkl`, `movie-ratings3.test`, `movie-ratings3.pkl`, `movie-ratings4.test`, `movie-ratings4.pkl`, and `movie-ratings5.test`, `movie-ratings5.pkl`. Additionally, you need to download the pre-trained models `MF-PARA-ciao-1.pt`, `MF-PARA-ciao-2.pt`, `MF-PARA-ciao-3.pt`, `MF-PARA-ciao-4.pt`, and `MF-PARA-ciao-5.pt`.
-
-3.   Confirm the file tree according to `tree.txt`
+     -   Each original dataset is split into 5 sets for five-fold cross-validation, consisting of `*.train`, `*.test`, and `*.extend` files:
+         -   `*.train`: used for training.
+         -   `*.test`: used for testing.
+         -   `*.extend`: includes `(user, positiveItem, negativeItem)` data generate by performing negative sampling on the `*.train` file.
+         -   Additionally, the `*.pkl` files store the processed results of the `*.train` files.
+         
+     -   The pre-trained model files follow the naming convention `backbone-method-dataset-fold_index`. For example, for the PARA method with MF as the backbone model on the Ciao dataset, the models are named as:
+         -   `MF-PARA-Ciao-1.pt`
+         -   `MF-PARA-Ciao-2.pt`
+         -   `MF-PARA-Ciao-3.pt`
+         -   `MF-PARA-Ciao-4.pt`
+         -   `MF-PARA-Ciao-5.pt`
+         
+         These files correspond to models trained on different folds for the five-fold cross-validation experiment.
+         
+     -   To reproduce the results of PARA method with MF as the backbone model on the Ciao dataset, ensure the dataset contains the following files:
+         
+         -   `movie-ratings1.test`, `movie-ratings1.pkl`
+         -   `movie-ratings2.test`, `movie-ratings2.pkl`
+         -   `movie-ratings3.test`, `movie-ratings3.pkl`
+         -   `movie-ratings4.test`, `movie-ratings4.pkl`
+         -   `movie-ratings5.test`, `movie-ratings5.pkl`
+         
+     -   Additionally, download the corresponding pre-trained models:
+         
+         -   `MF-PARA-ciao-1.pt`
+         -   `MF-PARA-ciao-2.pt`
+         -   `MF-PARA-ciao-3.pt`
+         -   `MF-PARA-ciao-4.pt`
+         -   `MF-PARA-ciao-5.pt`
+         
      
-4.   Inference
+3.   Confirm the file structure
+     Verify the downloaded files and folder structure according to the provided `tree.txt` file.
+
+4.   Run inference
+     To evaluate the model, run the following command:
 
      ```bash
      python ./main.py --backbone MF --method PARA --dataset ciao --mode eval
      ```
 
-5.   Convert to Excel
+     **Avaliable Options:**
+
+     *   `--backbone`: The backbone model. Available options: `['MF', 'LightGCN']`.
+     *   `--method`: The method to be used. Available options: `['Base', 'IPS', 'DICE', 'PDA', 'TIDE', 'PARA']`.
+     *   `dataset`: The dataset to use. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
+
+5.   Convert the results to Excel
+     After evaluation, convert the log results into an Excel file using the following command:
+     
      ```bash
      python ./logs/log_to_excel.py --input ./logs/eval.py --output ./output/eval.xlsx --sl 1 --el 2000
      ```
-
      
+     **Explanation of Parameters:**
+     
+     *   `--input`: Specifies the log file that contains the evaluation results (e.g., `eval.py`).
+     *   `--output`: Specifies the base name of the output Excel file (e.g., `eval.xlsx`). The actual output files will be saved as three separate files:
+         *   `eval-mean.xlsx`: Contains the mean of the evaluation metrics.
+         *   `eval-std.xlsx`: Contains the standard deviation of the evaluation metrics.
+         *   `eval-rank.xlsx`: Contains the ranking of the evaluation metrics.
+     *   `--sl`: Specifies the **start line** in the log file from which the results will be converted to Excel.
+     *   `--el`: Specifies the **end line** in the log file up to which the results will be converted to Excel.
 
 ## Start from Scratch
 

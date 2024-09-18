@@ -107,9 +107,9 @@ def log_to_excel(log_path, start_line, end_line, excel_path):
         df[metric] = df.apply(lambda row: f"{row[metric]} ({int(df_rank[(df_rank['dataset'] == row['dataset']) & (df_rank['backbone'] == row['backbone']) & (df_rank['method'] == row['method'])][metric].values[0])})", axis=1)
     
     df.to_excel(excel_path, index=False)
-    df_mean.to_excel('.' + excel_path.split('.')[1] + '- mean' + '.' + 'xlsx', index=False)
-    df_std.to_excel('.' + excel_path.split('.')[1] + '- std' + '.' + 'xlsx', index=False)
-    df_rank.to_excel('.' + excel_path.split('.')[1] + '- rank' + '.' + 'xlsx', index=False)
+    df_mean.to_excel('.' + excel_path.split('.')[1] + '-mean' + '.' + 'xlsx', index=False)
+    df_std.to_excel('.' + excel_path.split('.')[1] + '-std' + '.' + 'xlsx', index=False)
+    df_rank.to_excel('.' + excel_path.split('.')[1] + '-rank' + '.' + 'xlsx', index=False)
     print("Convert successfully.")
 
     
