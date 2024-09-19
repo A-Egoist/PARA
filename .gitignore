@@ -7,7 +7,7 @@
 # Code
 data/*
 save_model/*.pt
-utlis/*.exe
+*.exe
 
 # Generate by GitHub
 # Byte-compiled / optimized / DLL files

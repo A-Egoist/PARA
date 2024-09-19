@@ -8,10 +8,9 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset, random_split
-from tqdm import tqdm
 from sklearn.model_selection import train_test_split
-import random
 import pickle
+import argparse
 
 
 def load_data(dataset, train_data_path, test_data_path):
@@ -175,351 +174,10 @@ class BPRDataset(Dataset):
         return self.num_negatives * len(self.data) if self.is_training else len(self.data)
 
 
-def test_MovieLens100k():
-    train_data_path = os.path.join(os.getcwd(), 'Code/data/ml-100k', 'u1.base')  # 5 fold cross validation
-    test_data_path = os.path.join(os.getcwd(), 'Code/data/ml-100k', 'u1.test')  # 5 fold cross validation
-
-    train_data = load_data(train_data_path)
-    print(train_data)
-    test_data = load_data(test_data_path, False)
-    print(test_data)
-    # temp = train_data[['item', 'popularity', 'average_rating']].copy().drop_duplicates()
-    # test_data = pd.merge(test_data, temp, how='left', on='item')
-    # print(test_data)
-    num_items = max(train_data['item'].max(), test_data['item'].max())
-    df = pd.DataFrame(range(1, num_items + 1), columns=['item'])
-    item_popularity = pd.merge(df, train_data[['item', 'popularity']].copy().drop_duplicates(), how='left', on='item')
-    item_average_rating = pd.merge(df, train_data[['item', 'average_rating']].copy().drop_duplicates(), how='left', on='item')
-    item_popularity.fillna(0, inplace=True)
-    item_average_rating.fillna(1, inplace=True)
-    print(item_popularity)
-    print(item_average_rating)
-    # print(item_popularity.loc[item_popularity.isna().any(axis=1)])
-
-
-def dataset_split_Douban_movie(data_path, save_path_train, save_path_test):
-    # data_path = os.path.join(os.getcwd(), 'Code/data/Douban/movie/douban-movie.tsv')
-    data = pd.read_csv(data_path, sep='\t', header=None, skiprows=1, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
-    data.loc[data['rating']==-1, 'rating'] = 3
-    # print(f'data.shape[0]={data.shape[0]}')
-    # data.drop(data[data['rating']==-1].index, inplace=True)
-    # print(f'data.shape[0]={data.shape[0]}')
-    data_sorted = data.sort_values(by='timestamp')
-    train_data, test_data = train_test_split(data_sorted, test_size=0.2, shuffle=False)
-    train_data.to_csv(save_path_train, sep='\t', header=False, index=False)
-    test_data.to_csv(save_path_test, sep='\t', header=False, index=False)
-
-
-def process_Amazon_Book():
-    data_path = './Code/data/Amazon/book/ratings_Books.csv'
-    save_path = './Code/data/Amazon/book/amazon_book.csv'
-    with open(data_path, 'r', encoding='utf-8') as f:
-        user_dict, item_dict = {}, {}
-        lines = f.readlines()
-        u_index, i_index = 1, 1
-        for line in lines:
-            temp = line.strip().split(',')
-            u_id = temp[0]
-            i_id = temp[1]
-            if u_id not in user_dict.keys():
-                user_dict[u_id] = u_index
-                u_index += 1
-            if i_id not in item_dict.keys():
-                item_dict[i_id] = i_index
-                i_index += 1
-    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3])
-    print('loaded')
-    data['user'] = data['user'].map(user_dict)
-    print('user replaced')
-    data['item'] = data['item'].map(item_dict)
-    print('item replaced')
-    data = data.astype(np.int32)
-    data_sorted = data.sort_values(by='timestamp')
-    data_sorted.to_csv(save_path, sep='\t', header=False, index=False)
-
-    
-def process_Amazon_Music():
-    data_path = './Code/data/Amazon/music/ratings_Digital_Music.csv'
-    save_path = './Code/data/Amazon/music/amazon_music.csv'
-    save_path_train = './Code/data/Amazon/music/amazon_music.train'
-    save_path_test = './Code/data/Amazon/music/amazon_music.test'
-    with open(data_path, 'r', encoding='utf-8') as f:
-        user_dict, item_dict = {}, {}
-        lines = f.readlines()
-        u_index, i_index = 1, 1
-        for line in lines:
-            temp = line.strip().split(',')
-            u_id = temp[0]
-            i_id = temp[1]
-            if u_id not in user_dict.keys():
-                user_dict[u_id] = u_index
-                u_index += 1
-            if i_id not in item_dict.keys():
-                item_dict[i_id] = i_index
-                i_index += 1
-    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3])
-    print('loaded')
-    # data.replace({'user': user_dict, 'item': item_dict}, inplace=True)
-    data['user'] = data['user'].map(user_dict)
-    print('user replaced')
-    data['item'] = data['item'].map(item_dict)
-    print('item replaced')
-    data = data.astype(np.int32)
-    data_sorted = data.sort_values(by='timestamp')
-    data_sorted.to_csv(save_path, sep='\t', header=False, index=False)
-    train_data, test_data = train_test_split(data_sorted, test_size=0.2, shuffle=False)
-    train_data.to_csv(save_path_train, sep='\t', header=False, index=False)
-    test_data.to_csv(save_path_test, sep='\t', header=False, index=False)
-
-
-def process_Douban_Book():
-    pass
-
-
-def process_Douban_Movie():
-    pass
-
-
-def dataset_split_Ciao(data_path, save_path_train, save_path_test):
-    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'genre', 'review', 'rating', 'timestamp'], usecols=[0, 1, 4, 5], dtype={'user': np.int32, 'item': np.int32, 'rating': np.int32, 'timestamp': np.str_})
-    data['timestamp'] = pd.to_datetime(data['timestamp'])
-    data = data.sort_values(by='timestamp')
-    train_data, test_data = train_test_split(data, test_size=0.2, shuffle=False)
-    train_data.to_csv(save_path_train, sep='\t', header=False, index=False)
-    test_data.to_csv(save_path_test, sep='\t', header=False, index=False)
-
-
-def ml100k_5_fold_split():
-    data_path = './Code/data/ml-100k/u.data'
-    train_data_path = './Code/data/ml-100k/u{}.train'
-    test_data_path = './Code/data/ml-100k/u{}.test'
-    data = pd.read_csv(data_path, sep='\t', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
-    # data.loc[data['rating']==-1, 'rating'] = 3
-    print(f'data.shape[0]={data.shape[0]}')
-    data = data.sort_values(by='timestamp')
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
-def ml1m_5_fold_split():
-    data_path = './Code/data/ml-1m/ratings.dat'
-    train_data_path = './Code/data/ml-1m/ratings{}.train'
-    test_data_path = './Code/data/ml-1m/ratings{}.test'
-    data = pd.read_csv(data_path, sep='::', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32, engine='python')
-    # data.loc[data['rating']==-1, 'rating'] = 3
-    print(f'data.shape[0]={data.shape[0]}')
-    data = data.sort_values(by='timestamp')
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
-def ml10m_5_fold_split():
-    data_path = './Code/data/ml-10m/ratings.dat'
-    train_data_path = './Code/data/ml-10m/ratings{}.train'
-    test_data_path = './Code/data/ml-10m/ratings{}.test'
-    data = pd.read_csv(data_path, sep='::', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32, engine='python')
-    # data.loc[data['rating']==-1, 'rating'] = 3
-    print(f'data.shape[0]={data.shape[0]}')
-    data = data.sort_values(by='timestamp')
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
-def douban_movie_5_fold_split():
-    data_path = './Code/data/Douban/movie/douban_movie.tsv'
-    train_data_path = './Code/data/Douban/movie/douban_movie{}.train'
-    test_data_path = './Code/data/Douban/movie/douban_movie{}.test'
-    data = pd.read_csv(data_path, sep='\t', header=None, skiprows=1, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
-    # data.loc[data['rating']==-1, 'rating'] = 3
-    print(f'data.shape[0]={data.shape[0]}')
-    data.drop(data[data['rating']==-1].index, inplace=True)
-    print(f'data.shape[0]={data.shape[0]}')
-    data = data.sort_values(by='timestamp')
-
-    # 10-core filtering
-    # user_counts = data['user'].value_counts()
-    # item_counts = data['item'].value_counts()
-    # data = data[(data['user'].isin(user_counts[user_counts >= 10].index)) & (data['item'].isin(item_counts[item_counts >= 10].index))]
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
-def douban_book_5_fold_split():
-    data_path = './Code/data/Douban/book/douban_book.tsv'
-    train_save_path = './Code/data/Douban/book/douban_book{}.train'
-    test_save_path = './Code/data/Douban/book/douban_book{}.test'
-    data = pd.read_csv(data_path, sep='\t', header=None, skiprows=1, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
-    # data.loc[data['rating']==-1, 'rating'] = 3
-    print(f'data.shape[0]={data.shape[0]}')
-    data.drop(data[data['rating']==-1].index, inplace=True)
-    print(f'data.shape[0]={data.shape[0]}')
-    data = data.sort_values(by='timestamp')
-
-    # 10-core filtering
-    # user_counts = data['user'].value_counts()
-    # item_counts = data['item'].value_counts()
-    # data = data[(data['user'].isin(user_counts[user_counts >= 10].index)) & (data['item'].isin(item_counts[item_counts >= 10].index))]
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_save_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_save_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
-def amazon_music_5_fold_split():
-    data_path = './Code/data/Amazon/music/ratings_Digital_Music.csv'
-    save_path = './Code/data/Amazon/music/amazon_music.csv'
-    train_data_path = './Code/data/Amazon/music/amazon_music{}.train'
-    test_data_path = './Code/data/Amazon/music/amazon_music{}.test'
-    with open(data_path, 'r', encoding='utf-8') as f:
-        user_dict, item_dict = {}, {}
-        lines = f.readlines()
-        u_index, i_index = 1, 1
-        for line in lines:
-            temp = line.strip().split(',')
-            u_id = temp[0]
-            i_id = temp[1]
-            if u_id not in user_dict.keys():
-                user_dict[u_id] = u_index
-                u_index += 1
-            if i_id not in item_dict.keys():
-                item_dict[i_id] = i_index
-                i_index += 1
-    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3])
-    print('loaded')
-    # data.replace({'user': user_dict, 'item': item_dict}, inplace=True)
-    data['user'] = data['user'].map(user_dict)
-    print('user replaced')
-    data['item'] = data['item'].map(item_dict)
-    print('item replaced')
-    data = data.astype(np.int32)
-    data = data.sort_values(by='timestamp')
-    data.to_csv(save_path, sep='\t', header=False, index=False)
-
-    # 5-core filtering
-    # user_counts = data['user'].value_counts()
-    # item_counts = data['item'].value_counts()
-    # data = data[(data['user'].isin(user_counts[user_counts >= 5].index)) & (data['item'].isin(item_counts[item_counts >= 5].index))]
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
-    
-
-def amazon_book_5_fold_split():
-    data_path = './Code/data/Amazon/book/amazon_book.csv'
-    train_save_path = './Code/data/Amazon/book/amazon_book{}.train'
-    test_save_path = './Code/data/Amazon/book/amazon_book{}.test'
-    data = pd.read_csv(data_path, sep='\t', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
-    print(f'data.shape[0]={data.shape[0]}')
-    data = data.sort_values(by='timestamp')
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_save_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_save_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
-def ciao_5_fold_split():
-    data_path = './Code/data/Ciao/movie-ratings.txt'
-    train_data_path = './Code/data/Ciao/movie-ratings{}.train'
-    test_data_path = './Code/data/Ciao/movie-ratings{}.test'
-    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'genre', 'review', 'rating', 'timestamp'], usecols=[0, 1, 4, 5], dtype={'user': np.int32, 'item': np.int32, 'rating': np.int32, 'timestamp': np.str_})
-    data['timestamp'] = pd.to_datetime(data['timestamp'])
-    data = data.sort_values(by='timestamp')
-    
-    # 5-core filtering
-    # user_counts = data['user'].value_counts()
-    # item_counts = data['item'].value_counts()
-    # data = data[(data['user'].isin(user_counts[user_counts >= 5].index)) & (data['item'].isin(item_counts[item_counts >= 5].index))]
-
-    k_fold = 5  # k fold
-    k_fold_count = data.shape[0] // k_fold
-    for fold in range(k_fold):
-        index_begin = fold * k_fold_count
-        index_end = (fold + 1) * k_fold_count
-        test_data = data[index_begin:index_end]
-        train_data = pd.concat([
-            data[:index_begin],
-            data[index_end:]
-        ])
-        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
-        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
-
-
 def get_graph(dataset, cv_index, num_users, num_items, train_data):
     # print(f'cwd: {os.getcwd()}')
-    graph_index_path = './Code/data/LightGCN_graph' + f'/{dataset}-{cv_index}-graph_index.npy'
-    graph_data_path = './Code/data/LightGCN_graph' + f'/{dataset}-{cv_index}-graph_data.npy'
+    graph_index_path = './data/LightGCN_graph' + f'/{dataset}-{cv_index}-graph_index.npy'
+    graph_data_path = './data/LightGCN_graph' + f'/{dataset}-{cv_index}-graph_data.npy'
     if os.path.exists(graph_data_path) and os.path.exists(graph_index_path):
         graph_index = np.load(graph_index_path)
         graph_data = np.load(graph_data_path)
@@ -568,65 +226,205 @@ def get_graph(dataset, cv_index, num_users, num_items, train_data):
         np.save(graph_data_path, data.numpy())
         graph = graph.coalesce()
     return graph
+
+
+def amazon_music_5_fold_split():
+    data_path = './data/Amazon/music/ratings_Digital_Music.csv'
+    save_path = './data/Amazon/music/amazon_music.csv'
+    train_data_path = './data/Amazon/music/amazon_music{}.train'
+    test_data_path = './data/Amazon/music/amazon_music{}.test'
+    with open(data_path, 'r', encoding='utf-8') as f:
+        user_dict, item_dict = {}, {}
+        lines = f.readlines()
+        u_index, i_index = 1, 1
+        for line in lines:
+            temp = line.strip().split(',')
+            u_id = temp[0]
+            i_id = temp[1]
+            if u_id not in user_dict.keys():
+                user_dict[u_id] = u_index
+                u_index += 1
+            if i_id not in item_dict.keys():
+                item_dict[i_id] = i_index
+                i_index += 1
+    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3])
+    print('loaded')
+    # data.replace({'user': user_dict, 'item': item_dict}, inplace=True)
+    data['user'] = data['user'].map(user_dict)
+    print('user replaced')
+    data['item'] = data['item'].map(item_dict)
+    print('item replaced')
+    data = data.astype(np.int32)
+    data = data.sort_values(by='timestamp')
+    data.to_csv(save_path, sep='\t', header=False, index=False)
+
+    # 5-core filtering
+    # user_counts = data['user'].value_counts()
+    # item_counts = data['item'].value_counts()
+    # data = data[(data['user'].isin(user_counts[user_counts >= 5].index)) & (data['item'].isin(item_counts[item_counts >= 5].index))]
+
+    k_fold = 5  # k fold
+    k_fold_count = data.shape[0] // k_fold
+    for fold in range(k_fold):
+        index_begin = fold * k_fold_count
+        index_end = (fold + 1) * k_fold_count
+        test_data = data[index_begin:index_end]
+        train_data = pd.concat([
+            data[:index_begin],
+            data[index_end:]
+        ])
+        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
+        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
+
+
+def ciao_5_fold_split():
+    data_path = './data/Ciao/movie-ratings.txt'
+    train_data_path = './data/Ciao/movie-ratings{}.train'
+    test_data_path = './data/Ciao/movie-ratings{}.test'
+    data = pd.read_csv(data_path, sep=',', header=None, names=['user', 'item', 'genre', 'review', 'rating', 'timestamp'], usecols=[0, 1, 4, 5], dtype={'user': np.int32, 'item': np.int32, 'rating': np.int32, 'timestamp': np.str_})
+    data['timestamp'] = pd.to_datetime(data['timestamp'])
+    data = data.sort_values(by='timestamp')
     
+    # 5-core filtering
+    # user_counts = data['user'].value_counts()
+    # item_counts = data['item'].value_counts()
+    # data = data[(data['user'].isin(user_counts[user_counts >= 5].index)) & (data['item'].isin(item_counts[item_counts >= 5].index))]
+
+    k_fold = 5  # k fold
+    k_fold_count = data.shape[0] // k_fold
+    for fold in range(k_fold):
+        index_begin = fold * k_fold_count
+        index_end = (fold + 1) * k_fold_count
+        test_data = data[index_begin:index_end]
+        train_data = pd.concat([
+            data[:index_begin],
+            data[index_end:]
+        ])
+        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
+        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
+
+
+def douban_book_5_fold_split():
+    data_path = './data/Douban/book/douban_book.tsv'
+    train_save_path = './data/Douban/book/douban_book{}.train'
+    test_save_path = './data/Douban/book/douban_book{}.test'
+    data = pd.read_csv(data_path, sep='\t', header=None, skiprows=1, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
+    # data.loc[data['rating']==-1, 'rating'] = 3
+    print(f'data.shape[0]={data.shape[0]}')
+    data.drop(data[data['rating']==-1].index, inplace=True)
+    print(f'data.shape[0]={data.shape[0]}')
+    data = data.sort_values(by='timestamp')
+
+    # 10-core filtering
+    # user_counts = data['user'].value_counts()
+    # item_counts = data['item'].value_counts()
+    # data = data[(data['user'].isin(user_counts[user_counts >= 10].index)) & (data['item'].isin(item_counts[item_counts >= 10].index))]
+
+    k_fold = 5  # k fold
+    k_fold_count = data.shape[0] // k_fold
+    for fold in range(k_fold):
+        index_begin = fold * k_fold_count
+        index_end = (fold + 1) * k_fold_count
+        test_data = data[index_begin:index_end]
+        train_data = pd.concat([
+            data[:index_begin],
+            data[index_end:]
+        ])
+        train_data.to_csv(train_save_path.format(fold + 1), sep='\t', header=False, index=False)
+        test_data.to_csv(test_save_path.format(fold + 1), sep='\t', header=False, index=False)
+    
+
+def douban_movie_5_fold_split():
+    data_path = './data/Douban/movie/douban_movie.tsv'
+    train_data_path = './data/Douban/movie/douban_movie{}.train'
+    test_data_path = './data/Douban/movie/douban_movie{}.test'
+    data = pd.read_csv(data_path, sep='\t', header=None, skiprows=1, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32)
+    # data.loc[data['rating']==-1, 'rating'] = 3
+    print(f'data.shape[0]={data.shape[0]}')
+    data.drop(data[data['rating']==-1].index, inplace=True)
+    print(f'data.shape[0]={data.shape[0]}')
+    data = data.sort_values(by='timestamp')
+
+    # 10-core filtering
+    # user_counts = data['user'].value_counts()
+    # item_counts = data['item'].value_counts()
+    # data = data[(data['user'].isin(user_counts[user_counts >= 10].index)) & (data['item'].isin(item_counts[item_counts >= 10].index))]
+
+    k_fold = 5  # k fold
+    k_fold_count = data.shape[0] // k_fold
+    for fold in range(k_fold):
+        index_begin = fold * k_fold_count
+        index_end = (fold + 1) * k_fold_count
+        test_data = data[index_begin:index_end]
+        train_data = pd.concat([
+            data[:index_begin],
+            data[index_end:]
+        ])
+        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
+        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
+
+
+def ml_1m_5_fold_split():
+    data_path = './data/ml-1m/ratings.dat'
+    train_data_path = './data/ml-1m/ratings{}.train'
+    test_data_path = './data/ml-1m/ratings{}.test'
+    data = pd.read_csv(data_path, sep='::', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32, engine='python')
+    # data.loc[data['rating']==-1, 'rating'] = 3
+    print(f'data.shape[0]={data.shape[0]}')
+    data = data.sort_values(by='timestamp')
+
+    k_fold = 5  # k fold
+    k_fold_count = data.shape[0] // k_fold
+    for fold in range(k_fold):
+        index_begin = fold * k_fold_count
+        index_end = (fold + 1) * k_fold_count
+        test_data = data[index_begin:index_end]
+        train_data = pd.concat([
+            data[:index_begin],
+            data[index_end:]
+        ])
+        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
+        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
+
+
+def ml_10m_5_fold_split():
+    data_path = './data/ml-10m/ratings.dat'
+    train_data_path = './data/ml-10m/ratings{}.train'
+    test_data_path = './data/ml-10m/ratings{}.test'
+    data = pd.read_csv(data_path, sep='::', header=None, names=['user', 'item', 'rating', 'timestamp'], usecols=[0, 1, 2, 3], dtype=np.int32, engine='python')
+    # data.loc[data['rating']==-1, 'rating'] = 3
+    print(f'data.shape[0]={data.shape[0]}')
+    data = data.sort_values(by='timestamp')
+
+    k_fold = 5  # k fold
+    k_fold_count = data.shape[0] // k_fold
+    for fold in range(k_fold):
+        index_begin = fold * k_fold_count
+        index_end = (fold + 1) * k_fold_count
+        test_data = data[index_begin:index_end]
+        train_data = pd.concat([
+            data[:index_begin],
+            data[index_end:]
+        ])
+        train_data.to_csv(train_data_path.format(fold + 1), sep='\t', header=False, index=False)
+        test_data.to_csv(test_data_path.format(fold + 1), sep='\t', header=False, index=False)
+
 
 if __name__ == '__main__':
-    # path = './Code/data/ml-100k/u1.base'
-    # print('.' + path.split('.')[1] + '.item_information')
-    # load_data('ml-100k', './Code/data/ml-100k/u1.base', './Code/data/ml-100k/u1.test', True)
-    # test_MovieLens100k()
-    # test_MovieLens10m()
-    # test_DoubanMovie()
-    # Douban-movie
-    # data_path = './Code/data/Douban/movie/douban_movie.tsv'
-    # save_path_train = './Code/data/Douban/movie/douban_movie.train'
-    # save_path_test = './Code/data/Douban/movie/douban_movie.test'
-    # dataset_split_Douban_movie(data_path, save_path_train, save_path_test)
-    # Amazon-music
-    # process_Amazon_music()
-    # Ciao
-    # data_path = './Code/data/Ciao/movie-ratings.txt'
-    # save_path_train = './Code/data/Ciao/movie-ratings.train'
-    # save_path_test = './Code/data/Ciao/movie-ratings.test'
-    # dataset_split_Ciao(data_path, save_path_train, save_path_test)
-    # netflix
-    # process_netflix()
+    parser = argparse.ArgumentParser(description='argument parser')
+    parser.add_argument('--dataset', type=str, default='ciao', help="['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']")
+    args = parser.parse_args()
 
-    # datasets = ['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m', 'ml-100k', 'netflix', 'yelp']
-    # for dataset in datasets:
-    #     get_data_information(dataset)
-    # datasets = ['ml-100k']
-    # for dataset in datasets:
-        # print(f'dataset: {dataset}')
-        # alpha, beta = get_alpha_and_beta(dataset)
-        # print(f'alpha: {alpha}, beta: {beta}\n')
-        # num_users, num_items, num_interactions = get_data_information(dataset)
-        # print(f'num_users: {num_users}, num_items: {num_items}, num_interactions: {num_interactions}\n')
-
-    # datasets = ['ml-100k', 'ml-10m', 'douban-movie', 'amazon-music', 'ciao', 'netflix']
-    # for dataset in datasets:
-    #     dataset_analysis(dataset)
-
-    # datasets = ['ml-100k', 'ml-10m', 'douban-movie', 'amazon-music', 'ciao']
-    # for dataset in datasets:
-    #     target_analysis(dataset)
-
-    # datasets = ['ml-100k', 'ml-10m', 'douban-movie', 'amazon-music', 'ciao', 'netflix']
-    # dataset = 'ml-100k'
-    # for dataset in datasets:
-        # visualization_2d_train(dataset)
-        # visualization_2d_test(dataset)
-
-    # data processing
-    # process_Amazon_Book()
-    # process_Yelp()
-    
     # 5 fold cross validation
-    amazon_music_5_fold_split()
-    ciao_5_fold_split()
-    douban_book_5_fold_split()
-    douban_movie_5_fold_split()
-    ml1m_5_fold_split()
-    ml10m_5_fold_split()
-
-    # get_trisecting_result()
+    if args.dataset == 'amazon-music':
+        amazon_music_5_fold_split()
+    elif args.dataset == 'ciao':
+        ciao_5_fold_split()
+    elif args.dataset == 'douban-book':
+        douban_book_5_fold_split()
+    elif args.dataset == 'douban-movie':
+        douban_movie_5_fold_split()
+    elif args.dataset == 'ml-1m':
+        ml_1m_5_fold_split()
+    elif args.dataset == 'ml-10m':
+        ml_10m_5_fold_split()

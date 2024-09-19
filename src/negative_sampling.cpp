@@ -52,6 +52,7 @@ std::vector<Rating> loadRatings(const std::filesystem::path& filepath)
 
 std::vector<ExtendSample> negativeSampling(std::vector<Rating>& ratings, const int num_negatives)
 {
+    std::cout << "Starting negative sampling..." << std::endl;
     int maxItem = 0;
     std::set<std::tuple<int, int> > positiveSamples;
     for (const Rating& rating : ratings)
@@ -62,6 +63,7 @@ std::vector<ExtendSample> negativeSampling(std::vector<Rating>& ratings, const i
     std::vector<ExtendSample> extendSamples;
     int cnt = 0;
     int size = ratings.size();
+    int refreshRate = size / 100;
     for (const Rating& rating : ratings)
     {
         int user = rating.user;
@@ -69,72 +71,95 @@ std::vector<ExtendSample> negativeSampling(std::vector<Rating>& ratings, const i
         for (int i = 0; i < num_negatives; i ++)
         {
             int negativeItem = rand() % maxItem + 1;
-            while (positiveSamples.find(std::make_tuple(user, positiveItem)) != positiveSamples.end())
+            while (positiveSamples.find(std::make_tuple(user, negativeItem)) != positiveSamples.end())
             {
                 negativeItem = rand() % maxItem + 1;
             }
             extendSamples.push_back({user, positiveItem, negativeItem});
         }
-        std::cout << "[" << cnt ++ << "/" << size << "]" << std::endl;
+        // std::cout << "[" << cnt ++ << "/" << size << "]" << std::endl;
+        
+        cnt ++;
+        if (cnt % refreshRate == 0 || cnt == size)
+        {
+            float progress = cnt * 1.0 / size * 100;
+            std::cout << "\rProgress: [" << std::string((int)(progress / 2), '=') 
+                    << ">" << std::string(50 - (int)(progress / 2), ' ') << "] "
+                    << cnt << "/" << size << " (" << (int)progress << "%)" << std::flush;
+        }
     }
+    std::cout << std::endl;
     return extendSamples;
 }
 
 void saveExtendSamples(const std::filesystem::path& filepath, const std::vector<ExtendSample>& extendSamples)
 {
+    std::cout << "Saving negative samples..." << std::endl;
     std::ofstream file(filepath);
     if (!file.is_open())
     {
         std::cerr << "Faild to open file: " << filepath << std::endl;
         return ;
     }
+    int cnt = 0;
+    int size = extendSamples.size();
+    int refreshRate = size / 100;
     for (const ExtendSample& extendSample : extendSamples)
     {
         file << extendSample.user << "\t" << extendSample.positiveItem << "\t" << extendSample.negativeItem << std::endl;
+        cnt ++;
+        if (cnt % refreshRate == 0 || cnt == size)
+        {
+            float progress = cnt * 1.0 / size * 100;
+            std::cout << "\rProgress: [" << std::string((int)(progress / 2), '=') 
+                    << ">" << std::string(50 - (int)(progress / 2), ' ') << "] "
+                    << cnt << "/" << size << " (" << (int)progress << "%)" << std::flush;
+        }
     }
     file.close();
+    std::cout << std::endl;
+    std::cout << "Negative sampling completed." << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
-    std::string dataset = argv[1];
-    std::string fold_index = argv[2];
-
     std::filesystem::path prefix = "data";
-    std::filesystem::path suffix_load = ".train";
-    std::filesystem::path suffix_save = ".extend";
+    std::string dataset = argv[1];  // ['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']
+    std::string fold_index = argv[2];  // ['1', '2', '3', '4', '5']
+    std::string suffix_load = ".train";
+    std::string suffix_save = ".extend";
 
     std::filesystem::path load_filepath;
     std::filesystem::path save_filepath;
     if (dataset == "amazon-music")
     {
-        load_filepath = prefix / "Amazon" / "music" / ("amazon_music" + fold_index) / suffix_load;
-        save_filepath = prefix / "Amazon" / "music" / ("amazon_music" + fold_index) / suffix_save;
+        load_filepath = prefix / "Amazon" / "music" / ("amazon_music" + fold_index + suffix_load);
+        save_filepath = prefix / "Amazon" / "music" / ("amazon_music" + fold_index + suffix_save);
     }
     else if (dataset == "ciao")
     {
-        load_filepath = prefix / "Ciao" / ("movie-ratings" + fold_index) / suffix_load;
-        save_filepath = prefix / "Ciao" / ("movie-ratings" + fold_index) / suffix_save;
+        load_filepath = "." / prefix / "Ciao" / ("movie-ratings" + fold_index + suffix_load);
+        save_filepath = "." / prefix / "Ciao" / ("movie-ratings" + fold_index + suffix_save);
     }
     else if (dataset == "douban-book")
     {
-        load_filepath = prefix / "Douban" / "book" / ("douban_book" + fold_index) / suffix_load;
-        save_filepath = prefix / "Douban" / "book" / ("douban_book" + fold_index) / suffix_save;
+        load_filepath = prefix / "Douban" / "book" / ("douban_book" + fold_index + suffix_load);
+        save_filepath = prefix / "Douban" / "book" / ("douban_book" + fold_index + suffix_save);
     }
     else if (dataset == "douban-movie")
     {
-        load_filepath = prefix / "Douban" / "movie" / ("douban_movie" + fold_index) / suffix_load;
-        save_filepath = prefix / "Douban" / "movie" / ("douban_movie" + fold_index) / suffix_save;
+        load_filepath = prefix / "Douban" / "movie" / ("douban_movie" + fold_index + suffix_load);
+        save_filepath = prefix / "Douban" / "movie" / ("douban_movie" + fold_index + suffix_save);
     }
     else if (dataset == "ml-1m")
     {
-        load_filepath = prefix / "ml-1m" / ("ratings" + fold_index) / suffix_load;
-        save_filepath = prefix / "ml-1m" / ("ratings" + fold_index) / suffix_save;
+        load_filepath = prefix / "ml-1m" / ("ratings" + fold_index + suffix_load);
+        save_filepath = prefix / "ml-1m" / ("ratings" + fold_index + suffix_save);
     }
     else if (dataset == "ml-10m")
     {
-        load_filepath = prefix / "ml-10m" / ("ratings" + fold_index) / suffix_load;
-        save_filepath = prefix / "ml-10m" / ("ratings" + fold_index) / suffix_save;
+        load_filepath = prefix / "ml-10m" / ("ratings" + fold_index + suffix_load);
+        save_filepath = prefix / "ml-10m" / ("ratings" + fold_index + suffix_save);
     }
     std::cout << "Load path: " << load_filepath << std::endl;
     std::cout << "Save path: " << save_filepath << std::endl;

@@ -92,11 +92,12 @@ Take the Ciao dataset as an example:
      To evaluate the model, run the following command:
 
      ```bash
-     python ./main.py --backbone MF --method PARA --dataset ciao --mode eval
+     # Windows
+     python .\main.py --backbone MF --method PARA --dataset ciao --mode eval
      ```
-
+     
      **Avaliable Options:**
-
+     
      *   `--backbone`: The backbone model. Available options: `['MF', 'LightGCN']`.
      *   `--method`: The method to be used. Available options: `['Base', 'IPS', 'DICE', 'PDA', 'TIDE', 'PARA']`.
      *   `--dataset`: The dataset to use. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
@@ -106,7 +107,8 @@ Take the Ciao dataset as an example:
      After evaluation, convert the log results into an Excel file using the following command:
      
      ```bash
-     python ./logs/log_to_excel.py --input ./logs/eval.py --output ./output/eval.xlsx --sl 1 --el 2000
+     # Windows
+     python .\logs\log_to_excel.py --input .\logs\eval.py --output .\output\eval.xlsx --sl 1 --el 2000
      ```
      
      **Explanation of Parameters:**
@@ -127,9 +129,29 @@ Take the Ciao dataset as an example:
 
 1.   Clone source code
      ```bash
+     git clone https://github.com/A-Egoist/TWDP.git --depth=1
      ```
 
 2.   Data preprocessing
+
+     (a). Split the dataset into 5 sets
+
+     ```python
+     # Windows
+     python .\src\data_processing.py --dataset ciao
+     ```
+
+     (b). Negative sampling
+
+     ```bash
+     # Windows
+     g++ .\src\negative_sampling.cpp -o .\src\negative_sampling.exe
+     .\src\negative_sampling.exe ciao 1
+     ```
+
+     第一个参数表示待处理的数据集，可选范围 ['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']
+
+     第二个参数表示5折交叉数据集的编号，可选范围 ['1', '2', '3', '4', '5']
 
 3.   Training
 
