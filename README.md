@@ -125,13 +125,15 @@ Take the Ciao dataset as an example:
 
 This section explains how to reproduce the results from scratch, taking the Ciao dataset as an example:
 
-1.   Clone source code
+1.   Clone source code and datasets
      Clone the repository containing the code:
 
      ```bash
      git clone https://github.com/A-Egoist/TWDP.git --depth=1
      ```
 
+     Download the Ciao dataset from [URL](https://guoguibing.github.io/librec/datasets.html) and move it into the corresponding folder according to `tree.txt`
+     
 2.   Data preprocessing
 
      (a). Split the dataset into 5 sets

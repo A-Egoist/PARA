@@ -5,7 +5,14 @@
 .vscode
 
 # Code
-data/*
+# data/*
+data/Amazon/*
+data/Ciao/*
+data/Douban/*
+data/LightGCN_graph/*
+data/ml-1m/*
+data/ml-10m/*
+data/RunningExample/*
 save_model/*.pt
 *.exe
 
