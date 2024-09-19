@@ -143,6 +143,10 @@ This section explains how to reproduce the results from scratch, taking the Ciao
      python .\src\data_processing.py --dataset ciao
      ```
 
+     **Available Option:**
+
+     *   `--dataset`: The dataset to be splited. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
+
      (b). Compile the negative sampling script
 
      Use the following command to compile the C++ script for negative sampling:
@@ -161,6 +165,8 @@ This section explains how to reproduce the results from scratch, taking the Ciao
      .\src\negative_sampling.exe ciao 1
      ```
 
+     **Explanation of Parameters:**
+
      *   The **first parameter** specifies the dataset to be processed, with available options: `['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`
      *   The **second parameter** specifies the fold index for the cross-validation dataset, with options: `['1', '2', '3', '4', '5']`
 
@@ -172,12 +178,12 @@ This section explains how to reproduce the results from scratch, taking the Ciao
      python .\main.py --backbone MF --method PARA --dataset ciao --mode train
      ```
 
-     **Avaliable Options:**
+     **Available Options:**
 
      *   `--backbone`: The backbone model. Available options: `['MF', 'LightGCN']`.
      *   `--method`: The method to be used. Available options: `['Base', 'IPS', 'DICE', 'PDA', 'TIDE', 'PARA']`.
      *   `--dataset`: The dataset to use. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
-     *   `--mode`: The mode to be choosen. Available options: `['train', 'eval', 'both']`.
+     *   `--mode`: The mode to be chosen. Available options: `['train', 'eval', 'both']`.
 
 4.   Evaluation
      After training, evaluate the model's performance using this command:
@@ -187,6 +193,8 @@ This section explains how to reproduce the results from scratch, taking the Ciao
      python .\main.py --backbone MF --method PARA --dataset ciao --mode eval
      ```
 
+     Options are the same as step 3.
+     
 5.   Convert the results to Excel
      Finally, convert the evaluation logs to an Excel file:
 
