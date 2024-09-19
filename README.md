@@ -123,11 +123,11 @@ Take the Ciao dataset as an example:
 
 ## Start from Scratch
 
-TODO
-
-Take the Ciao dataset as an example:
+This section explains how to reproduce the results from scratch, taking the Ciao dataset as an example:
 
 1.   Clone source code
+     Clone the repository containing the code:
+
      ```bash
      git clone https://github.com/A-Egoist/TWDP.git --depth=1
      ```
@@ -136,28 +136,74 @@ Take the Ciao dataset as an example:
 
      (a). Split the dataset into 5 sets
 
+     Run the following command to split the Ciao dataset into 5 subsets for five-fold cross-validation:
+
      ```python
      # Windows
      python .\src\data_processing.py --dataset ciao
      ```
 
-     (b). Negative sampling
+     (b). Compile the negative sampling script
+
+     Use the following command to compile the C++ script for negative sampling:
 
      ```bash
      # Windows
      g++ .\src\negative_sampling.cpp -o .\src\negative_sampling.exe
+     ```
+
+     (c). Perform negative sampling
+
+     Execute the compiled script to perform negative sampling:
+
+     ```bash
+     # Windows
      .\src\negative_sampling.exe ciao 1
      ```
 
-     第一个参数表示待处理的数据集，可选范围 ['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']
-
-     第二个参数表示5折交叉数据集的编号，可选范围 ['1', '2', '3', '4', '5']
+     *   The **first parameter** specifies the dataset to be processed, with available options: `['amazon-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`
+     *   The **second parameter** specifies the fold index for the cross-validation dataset, with options: `['1', '2', '3', '4', '5']`
 
 3.   Training
+     To start the training process, run the following command:
 
-4.   Inference
+     ```bash
+     # Windows
+     python .\main.py --backbone MF --method PARA --dataset ciao --mode train
+     ```
 
-5.   Convert to Excel
+     **Avaliable Options:**
+
+     *   `--backbone`: The backbone model. Available options: `['MF', 'LightGCN']`.
+     *   `--method`: The method to be used. Available options: `['Base', 'IPS', 'DICE', 'PDA', 'TIDE', 'PARA']`.
+     *   `--dataset`: The dataset to use. Available options: `['amzoun-music', 'ciao', 'douban-book', 'douban-movie', 'ml-1m', 'ml-10m']`.
+     *   `--mode`: The mode to be choosen. Available options: `['train', 'eval', 'both']`.
+
+4.   Evaluation
+     After training, evaluate the model's performance using this command:
+
+     ```bash
+     # Windows
+     python .\main.py --backbone MF --method PARA --dataset ciao --mode eval
+     ```
+
+5.   Convert the results to Excel
+     Finally, convert the evaluation logs to an Excel file:
+
+     ```bash
+     # Windows
+     python .\logs\log_to_excel.py --input .\logs\eval.py --output .\output\eval.xlsx --sl 1 --el 2000
+     ```
+
+     **Explanation of Parameters:**
+
+     *   `--input`: Specifies the log file that contains the evaluation results (e.g., `eval.py`).
+     *   `--output`: Specifies the base name of the output Excel file (e.g., `eval.xlsx`). The actual output files will be saved as three separate files:
+         *   `eval-mean.xlsx`: Contains the mean of the evaluation metrics.
+         *   `eval-std.xlsx`: Contains the standard deviation of the evaluation metrics.
+         *   `eval-rank.xlsx`: Contains the ranking of the evaluation metrics.
+     *   `--sl`: Specifies the **start line** in the log file from which the results will be converted to Excel.
+     *   `--el`: Specifies the **end line** in the log file up to which the results will be converted to Excel.
 
 ## Citation
 
